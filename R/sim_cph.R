@@ -3,7 +3,8 @@
 #' Simulates survival data from a Cox Proportional Hazards model with the exponential distribution (Bender 2005).
 #'
 #' @param N desired sample size of simulated data
-#' @param formula formula of covariates
+#' @param formula formula of covariates provided as vectors
+#' @param X model matrix of covariates
 #' @param beta vector of coefficients
 #' @param lambda scale parameter from the exponential distribution
 #'
@@ -13,13 +14,25 @@
 #' @examples
 #' x1 <- rnorm(10)
 #' x2 <- rnorm(10)
-#' sim_cph(10, ~ x1 + x2, c(1, 0.5, 0.5), 0.50)
-sim_cph <- function(N, formula, beta, lambda){
-  X <- stats::model.matrix(formula)
+#' sim_cph(N = 10, formula = ~ x1 + x2, beta = c(1, 0.5), lambda = 0.50)
+sim_cph <- function(N, formula, X = NULL, beta, lambda){
+  #create model matrix if X is not supplied
+  if(is.null(X)){
+    X <- stats::model.matrix(formula)[,-1]
+  }
+  #check that the length of beta vector matches the number of covariates
+
+  if(length(beta) != ncol(X)){
+    stop("Length of beta does not match the number of columns of X")
+  }
+
+  #linear predictors
   Xbeta <- X %*% beta
+  #sample N from a uniform(0, 1) distribution
   U <- stats::runif(N)
-  l <- lambda
-  t <- - (log(U)) / (l * exp(Xbeta))
-  data.frame(t = t, X[,-1])
+  #calculate simulated times
+  t <- - (log(U)) / (lambda * exp(Xbeta))
+  #output as data.frame
+  data.frame(t = t, X)
 }
 

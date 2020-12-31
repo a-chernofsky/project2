@@ -4,12 +4,14 @@
 \alias{sim_cph}
 \title{Simulate time-to-event Cox Proportional Hazards exponential model data}
 \usage{
-sim_cph(N, formula, beta, lambda)
+sim_cph(N, formula, X = NULL, beta, lambda)
 }
 \arguments{
 \item{N}{desired sample size of simulated data}
 
-\item{formula}{formula of covariates}
+\item{formula}{formula of covariates provided as vectors}
+
+\item{X}{model matrix of covariates}
 
 \item{beta}{vector of coefficients}
 
@@ -24,5 +26,5 @@ Simulates survival data from a Cox Proportional Hazards model with the exponenti
 \examples{
 x1 <- rnorm(10)
 x2 <- rnorm(10)
-sim_cph(10, ~ x1 + x2, c(1, 0.5, 0.5), 0.50)
+sim_cph(N = 10, formula = ~ x1 + x2, beta = c(1, 0.5), lambda = 0.50)
 }

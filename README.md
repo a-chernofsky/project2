@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# project2
+# Project 2
 
 <!-- badges: start -->
 
@@ -11,14 +11,8 @@ The goal of project2 is to …
 
 ## Installation
 
-You can install the released version of project2 from
-[CRAN](https://CRAN.R-project.org) with:
-
-``` r
-install.packages("project2")
-```
-
-And the development version from [GitHub](https://github.com/) with:
+You can install the released version of project2 from the development
+version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
