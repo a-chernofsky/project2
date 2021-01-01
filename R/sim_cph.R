@@ -6,7 +6,7 @@
 #' @param formula formula of covariates provided as vectors
 #' @param X model matrix of covariates
 #' @param beta vector of coefficients
-#' @param lambda scale parameter from the exponential distribution
+#' @param tfun a time function from Bender 2005 with distributional parameters as input. Current options: `texp(lambda)`, `tweibull(lambda, nu)`, `tgompertz(lambda, alpha)`
 #'
 #' @return data.frame
 #' @export
@@ -14,8 +14,8 @@
 #' @examples
 #' x1 <- rnorm(10)
 #' x2 <- rnorm(10)
-#' sim_cph(N = 10, formula = ~ x1 + x2, beta = c(1, 0.5), lambda = 0.50)
-sim_cph <- function(N, formula, X = NULL, beta, lambda){
+#' sim_cph(N = 10, formula = ~ x1 + x2, beta = c(1, 0.5),  tfun = texp(lambda = 0.5))
+sim_cph <- function(N, formula, X = NULL, beta, tfun = texp(lambda = 0.5)){
   #create model matrix if X is not supplied
   if(is.null(X)){
     X <- stats::model.matrix(formula)[,-1]
@@ -31,7 +31,7 @@ sim_cph <- function(N, formula, X = NULL, beta, lambda){
   #sample N from a uniform(0, 1) distribution
   U <- stats::runif(N)
   #calculate simulated times
-  t <- - (log(U)) / (lambda * exp(Xbeta))
+  t <- tfun(U, Xbeta)
   #output as data.frame
   data.frame(t = t, X)
 }

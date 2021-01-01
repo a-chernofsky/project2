@@ -4,7 +4,7 @@
 \alias{sim_cph}
 \title{Simulate time-to-event Cox Proportional Hazards exponential model data}
 \usage{
-sim_cph(N, formula, X = NULL, beta, lambda)
+sim_cph(N, formula, X = NULL, beta, tfun = texp(lambda = 0.5))
 }
 \arguments{
 \item{N}{desired sample size of simulated data}
@@ -15,7 +15,7 @@ sim_cph(N, formula, X = NULL, beta, lambda)
 
 \item{beta}{vector of coefficients}
 
-\item{lambda}{scale parameter from the exponential distribution}
+\item{tfun}{a time function from Bender 2005 with distributional parameters as input. Current options: \code{texp(lambda)}, \code{tweibull(lambda, nu)}, \code{tgompertz(lambda, alpha)}}
 }
 \value{
 data.frame
@@ -26,5 +26,5 @@ Simulates survival data from a Cox Proportional Hazards model with the exponenti
 \examples{
 x1 <- rnorm(10)
 x2 <- rnorm(10)
-sim_cph(N = 10, formula = ~ x1 + x2, beta = c(1, 0.5), lambda = 0.50)
+sim_cph(N = 10, formula = ~ x1 + x2, beta = c(1, 0.5),  tfun = texp(lambda = 0.5))
 }

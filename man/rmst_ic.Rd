@@ -19,3 +19,8 @@ numeric
 \description{
 Calculate the restricted mean survival time for interval censored data
 }
+\examples{
+library(interval)
+data(bcos)
+rmst_ic(bcos$left, bcos$right, tau = 30)
+}

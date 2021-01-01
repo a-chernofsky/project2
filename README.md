@@ -19,6 +19,14 @@ version from [GitHub](https://github.com/) with:
 devtools::install_github("a-chernofsky/project2")
 ```
 
+## Simulating Cox Proportional Hazards model data
+
+## Simulating interval censored data
+
+## Calculating RMST with right censored data
+
+## Calculating RMST with interval censored data
+
 ## Example
 
 This is a basic example which shows you how to solve a common problem:

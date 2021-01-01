@@ -19,3 +19,9 @@ integer
 \description{
 Calculate restricted mean survival time for right censored data
 }
+\examples{
+#' library(survival)
+data(kidney)
+s <- survfit(Surv(time, status) ~ 1, data = kidney)$surv
+rmst_rc(kidney$time, s, tau = 50)
+}

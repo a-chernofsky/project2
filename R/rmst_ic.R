@@ -8,6 +8,9 @@
 #' @export
 #'
 #' @examples
+#' library(interval)
+#' data(bcos)
+#' rmst_ic(bcos$left, bcos$right, tau = 30)
 rmst_ic <- function(left, right, tau){
   icfit <- interval::icfit(left, right)
 

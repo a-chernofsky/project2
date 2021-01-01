@@ -8,11 +8,14 @@
 #' @export
 #'
 #' @examples
+#' #' library(survival)
+#' data(kidney)
+#' s <- survfit(Surv(time, status) ~ 1, data = kidney)$surv
+#' rmst_rc(kidney$time, s, tau = 50)
 rmst_rc <- function(time, surv, tau){
   t <- sort(unique(time))
   lagt <- c(NA, t)[-(length(t) + 1)]
   lagt[1] <- 0
-  tau <- 200
 
   lags <- c(NA, surv)[-(length(surv) + 1)]
   lags[1] <- 1
