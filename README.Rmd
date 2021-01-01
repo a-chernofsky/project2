@@ -29,10 +29,34 @@ You can install the released version of project2 from the development version fr
 devtools::install_github("a-chernofsky/project2")
 ```
 
-## Simulating Cox Proportional Hazards model data
+## Prerequisites
 
 ```{r}
 
+library(survival)
+library(interval)
+library(project2)
+
+```
+
+
+## Simulating Cox Proportional Hazards model data
+
+Assume $T \sim Exp(\lambda)$ with 
+```{r}
+#simulate covariates
+x1 <- rbinom(100, 1, 0.5)
+x2 <- rnorm(100)
+x3 <- factor(sample(c(1,2,3), size = 100, replace = T, prob = c(0.33, 0.33, 0.33)))
+
+b <- c(0.5, -0.02, 0.1, 0.1)
+
+simdata <- sim_cph(100, formula = ~ x1 + x2 + x3, beta = b, tfun = texp(0.1))
+simdata$event <- 1
+
+sfit <- survfit(Surv(t, event) ~ x1, data =simdata)
+summary(sfit)
+plot(sfit)
 ```
 
 ## Simulating interval censored data
