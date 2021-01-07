@@ -21,9 +21,12 @@ sim_cph <- function(N, formula, X = NULL, beta, tfun = texp(lambda = 0.5)){
     X <- stats::model.matrix(formula)[,-1]
   }
   #check that the length of beta vector matches the number of covariates
-
   if(length(beta) != ncol(X)){
     stop("Length of beta does not match the number of columns of X")
+  }
+  #check that the numbers of rows of X is equal to N the simulated sample size
+  if(N != nrow(X)){
+    stop("The number of rows in X is not equal to N")
   }
 
   #linear predictors

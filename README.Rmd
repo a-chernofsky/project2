@@ -1,16 +1,20 @@
 ---
-output: github_document
+output: 
+  github_document:
+    pandoc_args: --webtex
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, include = FALSE}
+```{r, include = TRUE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+
+set.seed(1233)
 ```
 
 # Project 2
@@ -18,7 +22,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of project2 is to ...
+The goal of project2 is to to estimate the indirect and direct effects of a treatment A on a time-to-event outcome T with a mediator M, when T is interval censored. The primary purpose of the package is to provide functions for estimating the indirect and direct effects from data. A secondary goal is to provide functions to conduct a simulation study to evaluate the proposed estimators. We deomonstrate the simulation functionality of the package below.
 
 ## Installation
 
@@ -39,53 +43,125 @@ library(project2)
 
 ```
 
+## Overview
+
+1.  Simulate time-to-event outcome conditional on covariates using `sim_cph` with the following arguments: 
+    a. `N` simulated sample size 
+    b. `formula` or `X` defining the covariates 
+    c. `beta` covariate effects  
+    d. `tfun` time function based on the assumed hazard function
+2.  Create interval censored outcome based on when the simulated time-to-event occurs with `sim_interval` and the following arguments: 
+    a. `t` true event times
+    b. `pmiss` probability of missing 
+    c. `visits` a vector of study visit times
+2.  Define a study visit schedule mimicking one way in which interval censored outcomes arise.
+3.  Recognizing that subjects miss study visits, set a probability of a subject missing a specific visit.
 
 ## Simulating Cox Proportional Hazards model data
 
-Assume $T \sim Exp(\lambda)$ with 
+Bender 2005 discussed a method to simulate time-to-event data from a Cox Proportional Hazards model with hazard function based on the probability integral transformation theorem. The method involves inverting the cumulative hazard function. While the method is generalized to any hazard function, choosing from popular survival distributions such as exponential, weibull, and gompertz provides a closed form inverse function that is simple to define. The `sim_cph` currently has functions to simulate survival times from these common distributions. 
+
+The `sim_cph` function takes the following arguments:
+
+1. `N` simulated sample size 
+2. `formula` or `X` defining the covariates 
+3. `beta` covariate effects  
+4. `tfun` time function based on the assumed hazard.
+
+Assume the following CPH model with a constant baseline hazard function $\lambda$:
+
+$h(t) = \lambda \exp(\beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3).$
+
+The variables $x_1, x_2, x_3$ are simulated from the following distributions:
+
 ```{r}
 #simulate covariates
 x1 <- rbinom(100, 1, 0.5)
 x2 <- rnorm(100)
 x3 <- factor(sample(c(1,2,3), size = 100, replace = T, prob = c(0.33, 0.33, 0.33)))
-
-b <- c(0.5, -0.02, 0.1, 0.1)
-
-simdata <- sim_cph(100, formula = ~ x1 + x2 + x3, beta = b, tfun = texp(0.1))
-simdata$event <- 1
-
-sfit <- survfit(Surv(t, event) ~ x1, data =simdata)
-summary(sfit)
-plot(sfit)
 ```
+
+We now set the values for the $N$, $\beta$'s and $\lambda$, 
+
+```{r}
+#N
+n <- 100
+#betas
+b <- c(-0.5, -0.02, 0.01, 0.01)
+#lambda
+lam <- 0.1
+
+```
+
+There are two ways to input the covariates into `sim_cph`:
+1.  `X` as a model matrix (use `model.matrix` function)
+2.  `formula` as a formula e.g. `~x1 + x2 + x3`.
+
+Make sure that any categorical variables are converted as factors otherwise they will be treated as numeric.
+
+```{r}
+
+t_data <- sim_cph(N = n, formula = ~ x1 + x2 + x3, 
+                  beta = b, 
+                  tfun = texp(lam))
+```
+
+We can use functions from the survival package to inspect the simulated data:
+
+```{r}
+
+t_data$event <- 1
+
+sfit <- survfit(Surv(t, event) ~ x1, data = t_data)
+summary(sfit)
+plot(sfit, col = c("red", "blue"))
+
+```
+
+We can fit a CPH model to check the results:
+
+```{r}
+coxph(Surv(t, event) ~ x1 + x2 + x3, data = t_data)
+```
+
 
 ## Simulating interval censored data
 
+```{r}
+
+int_data <- sim_interval(t_data$t, pmiss = 0.10, visits = c(0, 1, 5, 10, 15, 20))
+
+icfit <- icfit(Surv(l, r, type = "interval2") ~ x1, data = int_data)
+
+plot(icfit, XLEG = 15, YLEG = 0.8, shade = F)
+```
+
+
 ## Calculating RMST with right censored data
+
+```{r}
+
+i1 <- summary(sfit)$strata == "x1=1"
+i0 <- summary(sfit)$strata == "x1=0"
+t1 <- summary(sfit)$time[i1]
+s1 <- summary(sfit)$surv[i1]
+t0 <- summary(sfit)$time[i0]
+s0 <- summary(sfit)$surv[i0]
+rmst_rc(time = t1, surv = s1, tau = 20)
+rmst_rc(time = t0, surv = s0, tau = 20)
+
+```
+
 
 ## Calculating RMST with interval censored data
 
-## Example
+```{r}
 
-This is a basic example which shows you how to solve a common problem:
+rmst_ic(left = int_data$l[t_data$x1 == 1], 
+        right = int_data$r[t_data$x1 == 1], 
+        tau = 20)
+rmst_ic(left = int_data$l[t_data$x1 == 0], 
+        right = int_data$r[t_data$x1 == 0], 
+        tau = 20)
 
-```{r example}
-library(project2)
-## basic example code
 ```
-
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
-
-```{r cars}
-summary(cars)
-```
-
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/master/examples>.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
