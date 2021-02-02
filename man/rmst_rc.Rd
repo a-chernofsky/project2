@@ -4,12 +4,12 @@
 \alias{rmst_rc}
 \title{Calculate restricted mean survival time for right censored data}
 \usage{
-rmst_rc(time, surv, tau)
+rmst_rc(time, event, tau, subset = NULL)
 }
 \arguments{
 \item{time}{vector of failure times}
 
-\item{surv}{survival probabilities}
+\item{event}{vector of event status.}
 
 \item{tau}{time horizon}
 }
@@ -20,8 +20,8 @@ integer
 Calculate restricted mean survival time for right censored data
 }
 \examples{
-#' library(survival)
+library(survival)
 data(kidney)
 s <- survfit(Surv(time, status) ~ 1, data = kidney)$surv
-rmst_rc(kidney$time, s, tau = 50)
+rmst_rc(time = kidney$time, event = kidney$status, tau = 50)
 }

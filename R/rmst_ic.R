@@ -11,7 +11,15 @@
 #' library(interval)
 #' data(bcos)
 #' rmst_ic(bcos$left, bcos$right, tau = 30)
-rmst_ic <- function(left, right, tau){
+rmst_ic <- function(left, right, tau, subset = NULL){
+  if(length(right) != length(left))stop("the left and right vectors must be of the same length")
+
+  #if subset option is provided, subset the data
+  if(!is.null(subset)){
+    left <- left[subset]
+    right <- right[subset]
+  }
+  #fit the survival curves
   icfit <- interval::icfit(left, right)
 
   out <- data.frame(s = c(1, c(1-cumsum(icfit$pf))),
@@ -24,18 +32,22 @@ rmst_ic <- function(left, right, tau){
                     r = icfit$intmap[2,],
                     out = F)
 
+  #calculate the midpoint for undefined regions
   for(i in 1:(nrow(out) - 1)){
     mid$s[i] <- (out$s[i] + out$s[i + 1])/2
   }
 
+  #organize data into a dataframe
   all <- rbind(out, mid, make.row.names = F)
   all <- all[order(all$l, all$r),]
   all$diff <- all$r - all$l
   all$prod <- all$s*all$diff
 
+  #number of intervals less than tau
   nstar <- which(all$l <= tau & all$r > tau)
   stau <- getsurv(tau, icfit)[[1]]$S
 
+  #calculate rmst
   p1 <- sum(all$prod[1:(nstar - 1)])
   p2 <- all$out[nstar] * stau * (tau - all$l[nstar]) + (1- all$out[nstar]) * (all$s[nstar] + stau)/2 * (tau - all$l[nstar])
   p1 + p2
