@@ -12,6 +12,8 @@ rmst_rc(time, event, tau, subset = NULL)
 \item{event}{vector of event status.}
 
 \item{tau}{time horizon}
+
+\item{subset}{vector of indices or logical vector indicating desired subset}
 }
 \value{
 integer

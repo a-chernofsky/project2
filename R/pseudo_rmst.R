@@ -17,18 +17,22 @@ pseudo_rmst <- function(time, event, left = NULL, right = NULL, tau, censor = "r
 
   #calculate pseudo-values for right censored data
   if(censor == "right"){
-    u <- numeric(length(time))
-    for(i in 1:length(u)){
-      u[i] <- rmst_rc(time, event, tau, subset = -i)
+    n <- length(time)
+    theta <- rmst_rc(time, event, tau)
+    theta_jk <- numeric(length(time))
+    for(i in 1:length(theta_jk)){
+      theta_jk[i] <- rmst_rc(time, event, tau, subset = -i)
     }
   }
 
   #calculate pseduo-values for interval censored data
   else if(censor == "interval"){
-    u <- numeric(length(left))
-    for(i in 1:length(u)){
-      u[i] <- rmst_ic(left, right, tau, subset = -i)
+    n <- length(left)
+    theta <- rmst_ic(left, right, tau)
+    theta_jk <- numeric(length(left))
+    for(i in 1:length(theta_jk)){
+      theta_jk[i] <- rmst_ic(left, right, tau, subset = -i)
     }
   }
-  u
+  n*theta - (n-1) * theta_jk
 }

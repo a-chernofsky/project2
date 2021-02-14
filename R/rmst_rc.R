@@ -24,8 +24,10 @@ rmst_rc <- function(time, event, tau, subset = NULL){
     event <- event[subset]
   }
   #calculate survival probabilities
-  surv <- survfit(Surv(time, event) ~ 1)$surv
-  t <- sort(unique(time))
+  #calculate survival probabilities
+  sfun <- survival::survfit(survival::Surv(time, event) ~ 1)
+  surv <- sfun$surv
+  t <- sort(sfun$time)
 
   #create lagged vector of time
   lagt <- c(NA, t)[-(length(t) + 1)]

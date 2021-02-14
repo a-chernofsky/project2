@@ -4,7 +4,7 @@
 \alias{rmst_ic}
 \title{Calculate the restricted mean survival time for interval censored data}
 \usage{
-rmst_ic(left, right, tau)
+rmst_ic(left, right, tau, subset = NULL)
 }
 \arguments{
 \item{left}{numeric vector of left endpoints of censoring interval}

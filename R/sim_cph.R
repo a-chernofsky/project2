@@ -18,7 +18,7 @@
 sim_cph <- function(N, formula, X = NULL, beta, tfun = texp(lambda = 0.5)){
   #create model matrix if X is not supplied
   if(is.null(X)){
-    X <- stats::model.matrix(formula)[,-1]
+    X <- as.matrix(stats::model.matrix(formula)[,-1])
   }
   #check that the length of beta vector matches the number of covariates
   if(length(beta) != ncol(X)){

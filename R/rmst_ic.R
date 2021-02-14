@@ -45,7 +45,7 @@ rmst_ic <- function(left, right, tau, subset = NULL){
 
   #number of intervals less than tau
   nstar <- which(all$l <= tau & all$r > tau)
-  stau <- getsurv(tau, icfit)[[1]]$S
+  stau <- interval::getsurv(tau, icfit)[[1]]$S
 
   #calculate rmst
   p1 <- sum(all$prod[1:(nstar - 1)])

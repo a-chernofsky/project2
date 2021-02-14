@@ -296,10 +296,6 @@ t1 <- summary(sfit)$time[i1]
 s1 <- summary(sfit)$surv[i1]
 t0 <- summary(sfit)$time[i0]
 s0 <- summary(sfit)$surv[i0]
-rmst_rc(time = t1, surv = s1, tau = 20)
-#> [1] 12.22675
-rmst_rc(time = t0, surv = s0, tau = 20)
-#> [1] 8.750014
 ```
 
 ## Calculating RMST with interval censored data
@@ -315,3 +311,5 @@ rmst_ic(left = int_data$l[t_data$x1 == 0],
         tau = 20)
 #> [1] 9.256934
 ```
+
+\#\#Pseudo-observations

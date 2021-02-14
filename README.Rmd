@@ -165,3 +165,5 @@ rmst_ic(left = int_data$l[t_data$x1 == 0],
         tau = 20)
 
 ```
+
+##Pseudo-observations
