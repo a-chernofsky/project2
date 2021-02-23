@@ -147,8 +147,6 @@ t1 <- summary(sfit)$time[i1]
 s1 <- summary(sfit)$surv[i1]
 t0 <- summary(sfit)$time[i0]
 s0 <- summary(sfit)$surv[i0]
-rmst_rc(time = t1, surv = s1, tau = 20)
-rmst_rc(time = t0, surv = s0, tau = 20)
 
 ```
 

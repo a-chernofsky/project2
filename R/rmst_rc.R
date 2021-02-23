@@ -39,6 +39,11 @@ rmst_rc <- function(time, event, tau, subset = NULL){
   #number of observations less than tau
   nstar <- sum(t <= tau)
   #rmst estimate
-  sum((lags * (t - lagt))[1:nstar]) + surv[nstar] * (tau - t[nstar])
+  #rmst estimate
+  if(nstar >= 1){
+    sum((lags * (t - lagt))[1:nstar]) + surv[nstar] * (tau - t[nstar])
+  }else if (nstar == 0){
+    NA
+  }
 }
 
