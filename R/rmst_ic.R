@@ -19,34 +19,36 @@ rmst_ic <- function(left, right, tau, subset = NULL){
     left <- left[subset]
     right <- right[subset]
   }
-  #fit the survival curves
+
+  #fit survival curve
   icfit <- interval::icfit(left, right)
 
-  out <- data.frame(s = c(1, c(1-cumsum(icfit$pf))),
-                    l = c(0,icfit$intmap[2,]),
-                    r = c(icfit$intmap[1,], Inf),
-                    out = T)
-
-  #calculate the midpoint for undefined regions
-  mid <- data.frame(s = (out$s[1:(nrow(out)-1)] + out$s[2:nrow(out)])/2,
-                    l = icfit$intmap[1,],
-                    r = icfit$intmap[2,],
-                    out = F)
-
-
-  #organize data into a dataframe
-  all <- rbind(out, mid, make.row.names = F)
-  all <- all[order(all$l, all$r),]
-  all$diff <- all$r - all$l
-  all$prod <- all$s*all$diff
-
+  #outcome matrix
+  out <- cbind(s = c(1, c(1 - cumsum(icfit$pf))),
+               l = c(0,
+                     icfit$intmap[2, ]), r = c(icfit$intmap[1, ], Inf),
+               out = 1)
+  #midpoint matrix
+  mid <- cbind(s = (out[1:(nrow(out)-1), "s"] + out[2:nrow(out), "s"])/2,
+               l = icfit$intmap[1, ],
+               r = icfit$intmap[2, ],
+               out = 0)
+  #combine the matrices
+  all <- rbind(out, mid)
+  all <- all[order(all[,"l"], all[,"r"]), ]
+  #calculate interval lengths
+  diff <- all[,"r"] - all[,"l"]
+  #calculate areas for specific intervals
+  prod <- all[,"s"] * diff
   #number of intervals less than tau
-  nstar <- which(all$l <= tau & all$r > tau)
+  nstar <- which(all[,"l"] <= tau & all[, "r"] > tau)
+  #survival probablity at tau
   stau <- interval::getsurv(tau, icfit)[[1]]$S
 
-  #calculate rmst
-  p1 <- sum(all$prod[1:(nstar - 1)])
-  p2 <- all$out[nstar] * stau * (tau - all$l[nstar]) + (1- all$out[nstar]) * (all$s[nstar] + stau)/2 * (tau - all$l[nstar])
+  #combine results
+  p1 <- sum(prod[1:(nstar - 1)])
+  p2 <- all[nstar, "out"] * stau * (tau - all[nstar, "l"]) +
+    (1 - all[nstar, "out"]) * (all[nstar, "s"] + stau)/2 * (tau - all[nstar, "l"])
   p1 + p2
 }
 
