@@ -27,15 +27,12 @@ rmst_ic <- function(left, right, tau, subset = NULL){
                     r = c(icfit$intmap[1,], Inf),
                     out = T)
 
-  mid <- data.frame(s = NA,
+  #calculate the midpoint for undefined regions
+  mid <- data.frame(s = (out$s[1:(nrow(out)-1)] + out$s[2:nrow(out)])/2,
                     l = icfit$intmap[1,],
                     r = icfit$intmap[2,],
                     out = F)
 
-  #calculate the midpoint for undefined regions
-  for(i in 1:(nrow(out) - 1)){
-    mid$s[i] <- (out$s[i] + out$s[i + 1])/2
-  }
 
   #organize data into a dataframe
   all <- rbind(out, mid, make.row.names = F)
