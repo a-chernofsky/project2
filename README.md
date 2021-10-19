@@ -15,7 +15,6 @@ set.seed(1233)
 # Project 2
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 The goal of project2 is to to estimate the indirect and direct effects
@@ -39,7 +38,6 @@ devtools::install_github("a-chernofsky/project2")
 ## Prerequisites
 
 ``` r
-
 library(survival)
 library(interval)
 #> Loading required package: perm
@@ -90,15 +88,13 @@ The `sim_cph` function takes the following arguments:
 4.  `tfun` time function based on the assumed hazard.
 
 Assume the following CPH model with a constant baseline hazard function
-![\\lambda](https://latex.codecogs.com/png.latex?%5Clambda "\\lambda"):
+![\\lambda](https://latex.codecogs.com/png.latex?%5Clambda "\lambda"):
 
-![h(t) = \\lambda \\exp(\\beta\_1 x\_1 + \\beta\_2 x\_2 + \\beta\_3
-x\_3).](https://latex.codecogs.com/png.latex?h%28t%29%20%3D%20%5Clambda%20%5Cexp%28%5Cbeta_1%20x_1%20%2B%20%5Cbeta_2%20x_2%20%2B%20%5Cbeta_3%20x_3%29.
-"h(t) = \\lambda \\exp(\\beta_1 x_1 + \\beta_2 x_2 + \\beta_3 x_3).")
+![h(t) = \\lambda \\exp(\\beta_1 x_1 + \\beta_2 x_2 + \\beta_3 x_3).](https://latex.codecogs.com/png.latex?h%28t%29%20%3D%20%5Clambda%20%5Cexp%28%5Cbeta_1%20x_1%20%2B%20%5Cbeta_2%20x_2%20%2B%20%5Cbeta_3%20x_3%29. "h(t) = \lambda \exp(\beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3).")
 
-The variables ![x\_1, x\_2,
-x\_3](https://latex.codecogs.com/png.latex?x_1%2C%20x_2%2C%20x_3
-"x_1, x_2, x_3") are simulated from the following distributions:
+The variables
+![x_1, x_2, x_3](https://latex.codecogs.com/png.latex?x_1%2C%20x_2%2C%20x_3 "x_1, x_2, x_3")
+are simulated from the following distributions:
 
 ``` r
 #simulate covariates
@@ -109,8 +105,8 @@ x3 <- factor(sample(c(1,2,3), size = 100, replace = T, prob = c(0.33, 0.33, 0.33
 
 We now set the values for the
 ![N](https://latex.codecogs.com/png.latex?N "N"),
-![\\beta](https://latex.codecogs.com/png.latex?%5Cbeta "\\beta")’s and
-![\\lambda](https://latex.codecogs.com/png.latex?%5Clambda "\\lambda"),
+![\\beta](https://latex.codecogs.com/png.latex?%5Cbeta "\beta")’s and
+![\\lambda](https://latex.codecogs.com/png.latex?%5Clambda "\lambda"),
 
 ``` r
 #N
@@ -129,7 +125,6 @@ Make sure that any categorical variables are converted as factors
 otherwise they will be treated as numeric.
 
 ``` r
-
 t_data <- sim_cph(N = n, formula = ~ x1 + x2 + x3, 
                   beta = b, 
                   tfun = texp(lam))
@@ -139,7 +134,6 @@ We can use functions from the survival package to inspect the simulated
 data:
 
 ``` r
-
 t_data$event <- 1
 
 sfit <- survfit(Surv(t, event) ~ x1, data = t_data)
@@ -276,7 +270,6 @@ coxph(Surv(t, event) ~ x1 + x2 + x3, data = t_data)
 ## Simulating interval censored data
 
 ``` r
-
 int_data <- sim_interval(t_data$t, pmiss = 0.10, visits = c(0, 1, 5, 10, 15, 20))
 
 icfit <- icfit(Surv(l, r, type = "interval2") ~ x1, data = int_data)
@@ -289,7 +282,6 @@ plot(icfit, XLEG = 15, YLEG = 0.8, shade = F)
 ## Calculating RMST with right censored data
 
 ``` r
-
 i1 <- summary(sfit)$strata == "x1=1"
 i0 <- summary(sfit)$strata == "x1=0"
 t1 <- summary(sfit)$time[i1]
@@ -301,7 +293,6 @@ s0 <- summary(sfit)$surv[i0]
 ## Calculating RMST with interval censored data
 
 ``` r
-
 rmst_ic(left = int_data$l[t_data$x1 == 1], 
         right = int_data$r[t_data$x1 == 1], 
         tau = 20)
@@ -312,4 +303,4 @@ rmst_ic(left = int_data$l[t_data$x1 == 0],
 #> [1] 9.256934
 ```
 
-\#\#Pseudo-observations
+##Pseudo-observations

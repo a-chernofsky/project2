@@ -21,35 +21,24 @@ rmst_ic <- function(left, right, tau, subset = NULL){
   }
 
   #fit survival curve
-  icfit <- interval::icfit(left, right)
+  fit <- interval::icfit(left, right)
 
-  #outcome matrix
-  out <- cbind(s = c(1, c(1 - cumsum(icfit$pf))),
-               l = c(0,
-                     icfit$intmap[2, ]), r = c(icfit$intmap[1, ], Inf),
-               out = 1)
-  #midpoint matrix
-  mid <- cbind(s = (out[1:(nrow(out)-1), "s"] + out[2:nrow(out), "s"])/2,
-               l = icfit$intmap[1, ],
-               r = icfit$intmap[2, ],
-               out = 0)
-  #combine the matrices
-  all <- rbind(out, mid)
-  all <- all[order(all[,"l"], all[,"r"]), ]
-  #calculate interval lengths
-  diff <- all[,"r"] - all[,"l"]
-  #calculate areas for specific intervals
-  prod <- all[,"s"] * diff
-  #number of intervals less than tau
-  nstar <- which(all[,"l"] <= tau & all[, "r"] > tau)
-  #survival probablity at tau
-  stau <- interval::getsurv(tau, icfit)[[1]]$S
+  #vector of times
+  time <- c(0,as.vector(fit$intmap))
 
-  #combine results
-  p1 <- sum(prod[1:(nstar - 1)])
-  p2 <- all[nstar, "out"] * stau * (tau - all[nstar, "l"]) +
-    (1 - all[nstar, "out"]) * (all[nstar, "s"] + stau)/2 * (tau - all[nstar, "l"])
-  p1 + p2
+  #times le tau; if tau is between times add tau as the last time
+  if(tau %in% time) timetau <- time[time <= tau]
+  else  timetau <- c(time[time <= tau], tau)
+
+  #calculate survival function at each time point
+  St <- getsurv(timetau, fit)[[1]]$S
+
+  #store t + 1 and S(t+1)
+  timetau_tp1 <- c(timetau[2:length(timetau)], NA)
+  St_tp1 <- c(St[2:length(St)], NA)
+
+  #estimate of RMST
+  sum(0.5*(St + St_tp1)*(timetau_tp1 - timetau), na.rm = T)
 }
 
 

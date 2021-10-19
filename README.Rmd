@@ -45,7 +45,7 @@ library(project2)
 
 ## Overview
 
-1.  Simulate time-to-event outcome conditional on covariates using `sim_cph` with the following arguments: 
+1.  Simulate time-to-event outcomes conditional on covariates using `sim_cph` with the following arguments: 
     a. `N` simulated sample size 
     b. `formula` or `X` defining the covariates 
     c. `beta` covariate effects  

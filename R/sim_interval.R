@@ -22,12 +22,15 @@ sim_interval <- function(t, pmiss, visits){
   #matrix of study visits
   visit_mat <- sweep(miss, MARGIN=2, visits, `*`)
   #calculate the left interval endpoint
-  l <- sapply(1:length(t), function(x)ifelse(t[x] < visits[1], -Inf,
-                                             visit_mat[x,][max(which(t[x] > visit_mat[x,]), na.rm = T)]))
+  l <- sapply(1:length(t),
+              function(x)ifelse(t[x] < visits[1],
+                                -Inf,
+                                visit_mat[x,][max(which(t[x] > visit_mat[x,]), na.rm = T)]))
   #right interval endpoint
-  r <- sapply(1:length(t), function(x)ifelse(t[x] > visits[length(visits)] | t[x] > max(visit_mat[x,][!is.na(visit_mat[x,])]),
-                                             Inf,
-                                             visit_mat[x,][min(which(t[x] <= visit_mat[x,]), na.rm = T)]))
+  r <- sapply(1:length(t),
+              function(x)ifelse(t[x] > visits[length(visits)] | t[x] > max(visit_mat[x,][!is.na(visit_mat[x,])]),
+                                Inf,
+                                visit_mat[x,][min(which(t[x] <= visit_mat[x,]), na.rm = T)]))
   #output data.frame
   data.frame(t = t, l = l, r = r)
 }
